@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Алексей Федоров](https://up.htmlacademy.ru/ecmascript/14/user/1531779).
-* Наставник: `Неизвестно`.
+* Наставник: [Олег Зубов] (https://htmlacademy.ru/profile/id42701).
 
 ---
 
