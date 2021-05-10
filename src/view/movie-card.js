@@ -6,7 +6,7 @@ export const createMovieCard = () => {
       <span class="film-card__year">1929</span>
       <span class="film-card__duration">1h 55m</span>
       <span class="film-card__genre">Musical</span>
-    </p>
+    </p> 
     <img src="./images/posters/the-dance-of-life.jpg" alt="" class="film-card__poster">
     <p class="film-card__description">Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), end up together on a cold, rainy night at a tr…</p>
     <a class="film-card__comments">5 comments</a>
