@@ -110,7 +110,7 @@ const generatePeople = () => {
     ];
 
     let people = [];
-
+    people.push(peoplePart[getRandomInteger(0, peoplePart.length - 1)]);
     for (let i = 0; i < 3; i++) {
         if (getRandomInteger(0, 1)) {
             people.push(peoplePart[getRandomInteger(0, peoplePart.length - 1)]);
@@ -133,10 +133,14 @@ const generateGenre = () => {
     ];
 
     let genre = [];
-
+    let random = getRandomInteger(0, genrePart.length - 1);
+    genre.push(genrePart[random]);
+    genrePart.splice(random);
     for (let i = 0; i < 3; i++) {
         if (getRandomInteger(0, 1)) {
-            genre.push(genrePart[getRandomInteger(0, genrePart.length - 1)]);
+            let random = getRandomInteger(0, genrePart.length - 1);
+            genre.push(genrePart[random]);
+            genrePart.splice(random);
         }
     }
 

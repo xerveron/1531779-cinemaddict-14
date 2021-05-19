@@ -61,9 +61,9 @@ const generatePeople = () => {
     return people;
 }
 
-export const generateComments = () => {
+export const generateComments = (id) => {
     return {
-        id: String(getRandomInteger(0,50)),
+        id: String(id),
         author: generatePeople(),
         comment: generateCommentText(),
         date: dayjs().add(getRandomInteger(-100,0), 'day').toDate(),

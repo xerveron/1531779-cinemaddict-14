@@ -12,10 +12,14 @@ const MAIN_FILM_COUNT = 5;
 const EXTRA_FILM_CARDS = 2;
 const EXTRA_FILM_COUNT = 2;
 const FILMS_COUNT = 20;
+const FILMS_COUNT_PER_STEP = 5;
 const COMMENTS_COUNT = 50;
 
 const films = new Array(FILMS_COUNT).fill().map(generateFilm);
-const comments = new Array(COMMENTS_COUNT).fill().map(generateComments);
+const comments = new Array (COMMENTS_COUNT).fill();
+for (let i=0;i<50;i++) {
+    comments[i]=generateComments(i);
+}
 console.log (films);
 console.log (comments);
 
@@ -47,11 +51,25 @@ render(siteFilmsListSection, createElement(`div`, "films-list__container", ``), 
 
 const siteFilmCardElement = document.querySelector('.films-list__container');
 
-for (let i = 0; i < MAIN_FILM_COUNT; i++) {
+for (let i = 0; i < Math.min(films.length, FILMS_COUNT_PER_STEP); i++) {
     render(siteFilmCardElement, createMovieCard(films[i]), 'beforeend');
 }
+if (films.length>FILMS_COUNT_PER_STEP) {
+    let renderedFilms = FILMS_COUNT_PER_STEP;
+    render(siteFilmsListSection, createElement('button', 'films-list__show-more', 'Show more'), 'beforeend');
+    const showMoreButton = siteFilmsListSection.querySelector('.films-list__show-more');
+    showMoreButton.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        films
+            .slice(renderedFilms, renderedFilms + FILMS_COUNT_PER_STEP)
+            .forEach ((film) => render(siteFilmCardElement, createMovieCard(film), 'beforeend'));
 
-render(siteFilmsListSection, createElement('button', '"films-list__show-more"', 'Show more'), 'beforeend');
+        renderedFilms+= FILMS_COUNT_PER_STEP;
+        if (renderedFilms >= films.length) {
+            showMoreButton.remove();
+        }
+    });
+}
 
 
 for (let i = 0; i < EXTRA_FILM_CARDS; i++) {
@@ -69,6 +87,6 @@ const siteFooter = document.querySelector('.footer');
 
 render(siteFooterStatistics, createFooterStatistics(), 'beforeend');
 
-render(siteFooter, createPopUp(), 'afterend')
+render(siteFooter, createPopUp(films[0],comments), 'afterend')
 
 render
