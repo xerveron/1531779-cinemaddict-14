@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
+import {createElement} from '../util.js';
 
-export const createPopUp = (film,comment) => {
+const createPopUp = (film,commentInput) => {
 
     const {film_info, comments, user_details} = film;
     let filmComments = [];
     for (let i=0;i<comments.length;i++) {
-        filmComments[i]=comment[comments[i]];
+        filmComments[i]=commentInput[comments[i]];
     }
 
     const date = dayjs(film_info.release.date).format('DD MMMM YYYY');
@@ -74,13 +75,13 @@ export const createPopUp = (film,comment) => {
       </div>
 
       <section class="film-details__controls">
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist"  ${user_details.watchlist ? `checked` : ``}>
         <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${user_details.already_watched ? `checked` : ``}>
         <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${user_details.favorite ? `checked` : ``}>
         <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
       </section>
     </div>
@@ -90,7 +91,7 @@ export const createPopUp = (film,comment) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-          ${filmComments.map((a) => (`<li class="film-details__comment">
+          ${!filmComments ? `` : filmComments.map((a) => (`<li class="film-details__comment">
           <span class="film-details__comment-emoji">
             <img src="./images/emoji/${a.emotion}.png" width="55" height="55" alt="emoji-${a.emotion}">
           </span>
@@ -139,3 +140,27 @@ export const createPopUp = (film,comment) => {
   </form>
 </section>`;
 }
+
+
+export default class PopUp {
+    constructor (film,comment) {
+      this._element = null;
+      this._film = film;
+      this._comment = comment;
+    }
+  
+    getTemplate() {
+      return createPopUp(this._film,this._comment);
+    }
+    
+    getElement() {
+      if (!this._element) {
+        this._element = createElement (this.getTemplate());
+      }
+      return this._element;
+    }
+  
+    removeElement() {
+      this._element = null;
+    }
+  }

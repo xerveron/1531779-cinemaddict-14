@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
+import {createElement} from '../util.js';
 
-export const createMovieCard = (film) => {
+const createMovieCard = (film) => {
   const {film_info, comments, user_details} = film;
 
   const year = dayjs(film_info.release.date).format('YYYY');
-
     return `<article class="film-card">
     <h3 class="film-card__title">${film_info.title}</h3>
     <p class="film-card__rating">${film_info.total_rating}</p>
@@ -22,4 +22,26 @@ export const createMovieCard = (film) => {
       <button class="film-card__controls-item button film-card__controls-item--favorite ${user_details.favorite ? "" : "film-card__controls-item--active"}" type="button">Mark as favorite</button>
     </div>
   </article>`;
+}
+
+export default class MovieCard {
+  constructor (film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createMovieCard(this._film);
+  }
+  
+  getElement() {
+    if (!this._element) {
+      this._element = createElement (this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
 }

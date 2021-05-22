@@ -171,7 +171,7 @@ const generateRating = () => {
 export const generateFilm = () => {
     return {
         id: getRandomInteger(1000000, 9999999),
-        comments: new Array (getRandomInteger(0,6)).fill().map(() => getRandomInteger(0, 50)),
+        comments: new Array (getRandomInteger(0,6)).fill().map(() => getRandomInteger(0, 49)),
         film_info: {
             title: generateTitle(),
             alternative_title: generateTitle(),
