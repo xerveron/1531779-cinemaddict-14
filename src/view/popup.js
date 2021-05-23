@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../util.js';
+import Abstract from './abstract.js'
 
 const createPopUp = (film,commentInput) => {
 
@@ -142,25 +142,27 @@ const createPopUp = (film,commentInput) => {
 }
 
 
-export default class PopUp {
+export default class PopUp extends Abstract {
     constructor (film,comment) {
-      this._element = null;
+      super();
       this._film = film;
       this._comment = comment;
+      this._closeHandler = this._closeHandler.bind(this);
     }
   
     getTemplate() {
       return createPopUp(this._film,this._comment);
     }
-    
-    getElement() {
-      if (!this._element) {
-        this._element = createElement (this.getTemplate());
-      }
-      return this._element;
+
+    _closeHandler (evt) {
+      evt.preventDefault();
+      this._callback.close();
     }
-  
-    removeElement() {
-      this._element = null;
+
+    setCloseHandler (callback) {
+      this._callback.close = callback;
+
+      this.getElement().querySelector('.film-details__close-btn').addEventListener('click',this._closeHandler);
+
     }
   }

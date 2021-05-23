@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import Abstract from './abstract.js';
 
 const createFilterMenu = () => {
     return `<ul class="sort">
@@ -8,23 +8,8 @@ const createFilterMenu = () => {
   </ul>`;
 }
 
-export default class FilterMenu {
-  constructor () {
-    this._element = null;
-  }
-
+export default class FilterMenu extends Abstract {
   getTemplate() {
     return createFilterMenu();
-  }
-  
-  getElement() {
-    if (!this._element) {
-      this._element = createElement (this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

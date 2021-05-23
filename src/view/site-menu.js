@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import Abstract from './abstract.js';
 
 const createSiteMenu = (films) => {
 
@@ -31,24 +31,13 @@ const createSiteMenu = (films) => {
             </nav>`;
 }
 
-export default class SiteMenu {
+export default class SiteMenu extends Abstract {
   constructor (films) {
-    this._element = null;
+    super();
     this._films = films;
   }
 
   getTemplate() {
     return createSiteMenu(this._films);
-  }
-  
-  getElement() {
-    if (!this._element) {
-      this._element = createElement (this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

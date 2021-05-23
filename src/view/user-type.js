@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import Abstract from './abstract.js';
 
 const createUserType = (statistics,avatar) => {
   let rating = ``;
@@ -15,25 +15,14 @@ const createUserType = (statistics,avatar) => {
 </section>`;
 }
 
-export default class UserType {
+export default class UserType extends Abstract {
   constructor (statistics,avatar) {
-    this._element = null;
+    super();
     this._statistics = statistics;
     this._avatar = avatar;
   }
 
   getTemplate() {
     return createUserType(this._statistics, this._avatar);
-  }
-  
-  getElement() {
-    if (!this._element) {
-      this._element = createElement (this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
