@@ -1,27 +1,19 @@
 import Abstract from './abstract.js';
 
-const createMoviesList = () => {
-      return `<section class="films">
-                  <section class="films-list">
-                        <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
-                        <div class="films-list__container">
-                        </div>
-                  </section>
-                  <section class="films-list films-list--extra">
-                        <h2 class="films-list__title">Top rated</h2>
-                        <div class="films-list__container">
-                        </div>
-                  </section>
-                  <section class="films-list films-list--extra">
-                        <h2 class="films-list__title">Most commented</h2>
-                        <div class="films-list__container">
-                        </div>
-                  </section>
-            </section>`;
+const createMoviesList = (h2Hidden,h2Text,extra) => {
+      return `<section class="films-list ${extra ? `films-list--extra` : ``}">
+                  <h2 class="films-list__title ${h2Hidden ? `visually-hidden` : ``}">${h2Text}</h2>
+              </section>`;
 }
 
 export default class MoviesList extends Abstract {
+      constructor (h2Hidden,h2Text,extra) {
+            super();
+            this._h2Hidden = h2Hidden;
+            this._h2Text = h2Text;
+            this._extra = extra;
+          }
       getTemplate() {
-            return createMoviesList();
+            return createMoviesList(this._h2Hidden,this._h2Text,this._extra);
       }
 }
