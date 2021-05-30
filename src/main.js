@@ -1,19 +1,10 @@
-import SiteMenuView from './view/site-menu.js';
-import UserTypeView from './view/user-type.js';
-import FilterMenuView from './view/filter-menu.js';
-import MovieCardView from './view/movie-card.js';
-import ShowMoreView from './view/show-more.js';
-import { renderElement,createHTMLElement,render,RenderPosition } from './util.js';
-import PopUpView from './view/popup.js';
-import FooterStatisticsView from './view/footer-statistics.js';
-import MoviesListView from './view/movies-list-section';
+
+import FilmsModel from './model/films.js';
+import CommentsModel from './model/comments.js';
 import { generateFilm } from './mock/film.js';
 import { generateComments } from './mock/comments';
 import MovieListView from './presenter/movie-list.js'
 
-const EXTRA_FILM_CARDS = 2;
-const EXTRA_FILM_COUNT = 2;
-const FILMS_COUNT_PER_STEP = 5;
 const FILMS_COUNT = 20;
 const COMMENTS_COUNT = 50;
 
@@ -27,6 +18,7 @@ for (let i=0;i<50;i++) {
 const siteMainElement = document.querySelector('.main');
 const siteBody = document.querySelector('body');
 const siteHeader = document.querySelector('header');
+const siteFooterStatistics = document.querySelector('.footer__statistics');
 
 console.log (films);
 console.log (comments);
@@ -54,11 +46,15 @@ const renderMovieCard = (movieListElement, film) => {
     
 } */
 
-renderElement(siteHeader, new UserTypeView (10,`images/bitmap@2x.png`), RenderPosition.BEFOREEND);
+const filmsModel = new FilmsModel ();
+filmsModel.setFilms(films);
 
-const movieList = new MovieListView (siteMainElement,siteBody);
+const commentsModel = new CommentsModel ();
+commentsModel.setComments(comments);
 
-movieList.init(films, comments);
+const movieList = new MovieListView (filmsModel,commentsModel,siteMainElement,siteBody,siteHeader);
+
+movieList.init(siteFooterStatistics);
 
 /* renderElement(siteMainElement, new SiteMenuView(films), RenderPosition.BEFOREEND);
 renderElement(siteMainElement, new FilterMenuView(), RenderPosition.BEFOREEND);
@@ -97,6 +93,4 @@ if (films.length>FILMS_COUNT_PER_STEP) {
     }
 } */
 
-const siteFooterStatistics = document.querySelector('.footer__statistics');
-
-renderElement(siteFooterStatistics, new FooterStatisticsView(films), RenderPosition.BEFOREEND);
+;
