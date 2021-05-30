@@ -8,7 +8,7 @@ import ShowMoreView from '../view/show-more.js';
 import PopUpView from '../view/popup.js';
 import MoviesListContainerView from '../view/movie-container.js';
 import FooterStatisticsView from '../view/footer-statistics.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, SortType } from '../const.js';
 import { updateItem, renderElement, remove, RenderPosition } from '../util.js';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -24,6 +24,7 @@ export default class MovieList {
         this._changeData = changeData;
         this._changeMode = changeMode;
         this._movieCard = {};
+        this._moviePopUp = null;
         this._userType = new UserTypeView(10, `images/bitmap@2x.png`);
         this._movieListSectionComponent = new MoviesListSectionView();
         this._showMoreButtonComponent = new ShowMoreView();
@@ -78,51 +79,40 @@ export default class MovieList {
     }
 
     _handleViewAction(actionType, updateType, update) {
-        // Здесь будем вызывать обновление модели.
-        // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-        // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-        // update - обновленные данные
         switch (actionType) {
-            case UserAction.UPDATE_FILM:
-              this._filmsModel.updateFilm(updateType, update);
-              break;
+            case UserAction.UPDATE_CARD:
+                this._filmsModel.updateFilm(updateType, update);
+                break;
+            case UserAction.UPDATE_POP_UP:
+                this._filmsModel.updateFilm(updateType, update);
+                break;
             case UserAction.ADD_COMMENT:
-              this._tasksModel.addComment(updateType, update);
-              break;
+                this._tasksModel.addComment(updateType, update);
+                break;
             case UserAction.DELETE_COMMENT:
-              this._tasksModel.deleteComment(updateType, update);
-              break;
-          }
+                this._tasksModel.deleteComment(updateType, update);
+                break;
+        }
     }
 
     _handleModelEvent(updateType, film) {
-        // В зависимости от типа изменений решаем, что делать:
-        // - обновить часть списка (например, когда поменялось описание)
-        // - обновить список (например, когда задача ушла в архив)
-        // - обновить всю доску (например, при переключении фильтра)
-        
         switch (updateType) {
-            case UpdateType.PATCH:
-              // - обновить часть списка (например, когда поменялось описание)
-              remove(this._movieCard[film.id]);/* 
-              this.renderFilm(film); */
-              break;
-            case UpdateType.MINOR:
-              // - обновить список (например, когда задача ушла в архив)
-              /* console.log(this);
-              console.log(film);
-              console.log (this._getFilms()) *//* 
-              remove(this._movieCard[film.id]); */
-              console.log(film);
-              console.log(this);
-              console.log(this._movieCard[film.id]);
-            /* this._movieCard[film.id].updateElement(); */
-            this.renderFilm(this._movieCard[film.id])
-              break;
-            case UpdateType.MAJOR:
-              // - обновить всю доску (например, при переключении фильтра)
-              break;
-          }
+            case UpdateType.POPUP:
+                console.log(film);
+                remove(this._moviePopUp);
+                this.renderPopUp(film,this._getComments())
+                this._clearBoard();
+                this._renderList();
+                this._renderShowMore();
+                break;
+            case UpdateType.BOARD:
+                this._clearBoard();
+                this._renderList();
+                this._renderShowMore();
+                break;
+            case UpdateType.PAGE:
+                break;
+        }
     }
 
 
@@ -148,86 +138,116 @@ export default class MovieList {
     }
 
     renderPopUp(film, comments) {
-        const moviePopUp = new PopUpView(film, comments);
-        this._siteBody.appendChild(moviePopUp.getElement());
-        this._siteBody.classList.add('hide-overflow');
+        console.log(this._moviePopUp)
+        if (this._moviePopUp) {
+            remove(this._moviePopUp),
+            this._moviePopUp=null;
+        }
+        this._moviePopUp = new PopUpView(film, comments);
+        this._siteBody.appendChild(this._moviePopUp.getElement());
+
+        this._moviePopUp.setWatchListHandler(this._handleWatchListClick);
+        this._moviePopUp.setWatchedHandler(this._handleWatchedClick);
+        this._moviePopUp.setFavoriteHandler(this._handleFavoriteClick);
+        this._moviePopUp.setCommentHandler(this._handleCommentSubmit);
     }
 
+    _handleCommentSubmit(movieCard) {
+            this._handleViewAction(
+                UserAction.ADD_COMMENT,
+                UpdateType.POPUP,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isWatchList: !movieCard._data.isWatchList,
+                    },
+                ),
+            );
+        } 
 
-
-    _handleWatchListClick(movieCard) {
-        this._handleViewAction (
-            UserAction.UPDATE_FILM, 
-            UpdateType.MINOR,
-            Object.assign(
-                {},
-                movieCard._data,
-                {
-                    isWatchList : !movieCard._data.isWatchList,
-                },
-            ),
-        );
-        /* movieCard._changeData(
-            UserAction.UPDATE_FILM,
-            UpdateType.MINOR,
-            Object.assign(
-                {},
-                this._task,
-                {
-                    isWatchList : !this._data.filmUserInfo.isWatchList,
-                },
-            ),
-        );  */
+    _handleWatchListClick(movieCard, popUp = null) {
+        if (popUp) {
+            this._handleViewAction(
+                UserAction.UPDATE_POP_UP,
+                UpdateType.POPUP,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isWatchList: !movieCard._data.isWatchList,
+                    },
+                ),
+            );
+        } else {
+            this._handleViewAction(
+                UserAction.UPDATE_CARD,
+                UpdateType.BOARD,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isWatchList: !movieCard._data.isWatchList,
+                    },
+                ),
+            );
+        }
     }
 
-    _handleWatchedClick(movieCard) {
-        this._handleViewAction (
-            UserAction.UPDATE_FILM, 
-            UpdateType.MINOR,
-            Object.assign(
-                {},
-                movieCard._data,
-                {
-                    isWatched : !movieCard._data.isWatched,
-                },
-            ),
-        );
-        /* this._changeData(
-            UserAction.UPDATE_FILM,
-            UpdateType.MINOR,
-            Object.assign(
-                {},
-                this._task,
-                {
-                    isFavorite: !this._task.isFavorite,
-                },
-            ),
-        ); */
+    _handleWatchedClick(movieCard, popUp = null) {
+        if (popUp) {
+            this._handleViewAction(
+                UserAction.UPDATE_POP_UP,
+                UpdateType.POPUP,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isWatched: !movieCard._data.isWatched,
+                    },
+                ),
+            );
+        } else {
+            this._handleViewAction(
+                UserAction.UPDATE_CARD,
+                UpdateType.BOARD,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isWatched: !movieCard._data.isWatched,
+                    },
+                ),
+            );
+        }
     }
 
-    _handleFavoriteClick(movieCard) {
-        this._handleViewAction (
-            UserAction.UPDATE_FILM, 
-            UpdateType.MINOR,
-            Object.assign(
-                {},
-                movieCard._data,
-                {
-                    isFavorite : !movieCard._data.isFavorite,
-                },
-            ),
-        );
-       /*  this._changeData(
-            UserAction.UPDATE_FILM,
-            UpdateType.MINOR,
-            Object.assign(
-                {},
-                this._task,
-                {
-                    isFavorite: !this._task.isFavorite,
-                },
-            ),
-        ); */
+    _handleFavoriteClick(movieCard, popUp = null) {
+        if (popUp) {
+            this._handleViewAction(
+                UserAction.UPDATE_POP_UP,
+                UpdateType.POPUP,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isFavorite: !movieCard._data.isFavorite,
+                    },
+                ),
+            );
+        } else {
+            this._handleViewAction(
+                UserAction.UPDATE_CARD,
+                UpdateType.BOARD,
+                Object.assign(
+                    {},
+                    movieCard._data,
+                    {
+                        isFavorite: !movieCard._data.isFavorite,
+                    },
+                ),
+            );
+        }
     }
 
     _handleLoadShowMoreClick() {
@@ -237,15 +257,16 @@ export default class MovieList {
 
         this._renderFilms(films);
         this._renderedFilmsCount = newRenderedFilmsCount;
-        if (this._renderedTaskCount >= filmsCount) {
-            remove(this._loadMoreButtonComponent);
+
+        if (this._renderedFilmsCount >= filmsCount) {
+            remove(this._showMoreButtonComponent);
         }
     }
-    
+
     _handleFilmChange(updatedFilm) {
         this._getFilms = updateItem(this.getFilms, updatedFilm);
-        this.renderFilm (this._movieCard[updatedFilm.id]);
-      }
+        this.renderFilm(this._movieCard[updatedFilm.id]);
+    }
 
 
     _renderShowMore() {
@@ -259,13 +280,43 @@ export default class MovieList {
     }
 
     _renderList() {
+
         const filmsCount = this._getFilms().length;
-        const films = this._getFilms().slice(0, Math.min(filmsCount, FILMS_COUNT_PER_STEP));
+        const films = this._getFilms().slice(0, Math.min(filmsCount, this._renderedFilmsCount));
 
         this._renderFilms(films);
 
         if (filmsCount > FILMS_COUNT_PER_STEP) {
             this._renderShowMore();
+        }
+    }
+
+    _clearBoard({ resetRenderedFilms = false, resetSortType = false } = {}) {
+        const filmsCount = this._getFilms().length;
+
+        /* this._taskNewPresenter.destroy(); */
+        Object
+            .values(this._movieCard)
+            .forEach((film) => remove(film));
+
+        this._movieCard = {};
+
+        /* remove(this._sortComponent);
+        remove(this._noTaskComponent);
+        remove(this._loadingComponent); */
+        remove(this._showMoreButtonComponent);
+
+        if (resetRenderedFilms) {
+            this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
+        } else {
+            // На случай, если перерисовка доски вызвана
+            // уменьшением количества задач (например, удаление или перенос в архив)
+            // нужно скорректировать число показанных задач
+            this._renderedTaskCount = Math.min(filmsCount, this._renderedFilmsCount);
+        }
+
+        if (resetSortType) {
+            this._currentSortType = SortType.DEFAULT;
         }
     }
 

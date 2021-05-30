@@ -52,14 +52,12 @@ export default class MovieCard extends Smart {
     this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this); */
 
     this._watchListHandler = this._watchListHandler.bind(this);
+    this._favoriteHandler = this._favoriteHandler.bind(this);
+    this._watchedHandler = this._watchedHandler.bind(this);
 
     this.setWatchListHandler = this.setWatchListHandler.bind(this);
     this.setWatchedHandler = this.setWatchedHandler.bind(this);
     this.setFavoriteHandler = this.setFavoriteHandler.bind(this);
-
-    this._favoriteHandler = this._favoriteHandler.bind(this);
-    this._watchedHandler = this._watchedHandler.bind(this);
-    this._watchListHandler = this._watchListHandler.bind(this);
 /* 
     this._setInnerHandlers(); */
   }
@@ -68,14 +66,14 @@ export default class MovieCard extends Smart {
     return createMovieCard(this._data);
   }
 
-  static parseFilmToData (film) {
-   /*  let filmUserInfo = {
+   static parseFilmToData (film) {
+    /* et filmUserInfo = {
       filmUserInfo : {
       isWatchList:film.user_details.watchlist,
       isWatched:film.user_details.already_watched,
       isFavorite:film.user_details.favorite,
       },
-    } */
+    }  */
     return Object.assign (
       {},
       film,
@@ -83,15 +81,15 @@ export default class MovieCard extends Smart {
       isWatched:film.user_details.already_watched,
       isFavorite:film.user_details.favorite,}
     )
-  }
+  } 
 
-  static parseDataToFilm (data) {
+   static parseDataToFilm (data) {
     data.user_details.watchlist = data.filmUserInfo.isWatchList;
     data.user_details.already_watched = data.filmUserInfo.isWatched;
     data.user_details.favorite = data.filmUserInfo.isFavorite;
     delete data.filmUserInfo;
     return data;
-  }
+  } 
 
   
 
@@ -142,7 +140,6 @@ export default class MovieCard extends Smart {
 
   setWatchListHandler(callback) {
     this._callback.watchListClick = callback;
-
     this.getElement().querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this._watchListHandler);
   }
 
@@ -155,21 +152,7 @@ export default class MovieCard extends Smart {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._favoriteHandler);
   }
- /*  
-  _watchListToggleHandler(evt) {
-    evt.preventDefault();
-    this.updateData ({isWatchList : !this._data.filmUserInfo.isWatchList,});
-  }
-
-  _watchedToggleHandler(evt) {
-    evt.preventDefault();
-    this.updateData ({isWatched : !this._data.filmUserInfo.isWatched,});
-  }
-
-  _favoriteToggleHandler(evt) {
-    evt.preventDefault();
-    this.updateData({isFavorite : !this._data.filmUserInfo.isFavorite,});
-  } */
+ 
 
   _openPopUpHandler (evt) {
     evt.preventDefault();

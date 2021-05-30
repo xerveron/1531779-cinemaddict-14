@@ -18,6 +18,9 @@ export default class Films extends Observer {
 
   updateFilm(updateType, update) {
     const index = this._films.findIndex((film) => film.id === update.id);
+    update.user_details.already_watched = update.isWatched;
+    update.user_details.favorite = update.isFavorite;
+    update.user_details.watchlist = update.isWatchList;
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting film');

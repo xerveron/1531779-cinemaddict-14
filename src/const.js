@@ -7,13 +7,14 @@ export const SortType = {
 };
 
 export const UserAction = {
-  UPDATE_FILM: 'UPDATE_FILM',
+  UPDATE_CARD: 'UPDATE_CARD',
+  UPDATE_POP_UP: 'UPDATE_POP_UP',
   ADD_COMMENT: 'ADD_COMMENT',
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
 
 export const UpdateType = {
-  PATCH: 'PATCH',
-  MINOR: 'MINOR',
-  MAJOR: 'MAJOR',
+  BOARD: 'BOARD',
+  POPUP: 'POP_UP',
+  PAGE: 'PAGE',
 };
